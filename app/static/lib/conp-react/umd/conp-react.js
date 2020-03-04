@@ -7590,7 +7590,7 @@ var DashboardChart_DashboardChart = function DashboardChart(_ref) {
             },
 
             title: {
-                text: 'Cumulative Number of Datasets and Pipelines'
+                text: 'Cumulative Number of Datasets'
             },
 
             yAxis: [{
