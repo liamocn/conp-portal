@@ -65,6 +65,7 @@ class DATSDataset(object):
 
     @property
     def DatsFilepath(self):
+        descriptor = None
         dirs = os.listdir(self.datasetpath)
         for file in dirs:
             if fnmatch.fnmatch(file.lower(), 'dats.json'):
@@ -96,14 +97,12 @@ class DATSDataset(object):
 
     @property
     def ReadmeFilepath(self):
+        readme = None
         dirs = os.listdir(self.datasetpath)
         for file in dirs:
             if fnmatch.fnmatch(file.lower(), 'readme.md'):
                 readme = os.path.join(self.datasetpath, file)
                 break
-
-        if readme == None:
-            raise 'No Readme found'
 
         return readme
 

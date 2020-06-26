@@ -3,6 +3,7 @@
 This is the initial module that contains the pytest configuration fixtures
 """
 import pytest
+import flask
 import os
 from app import create_app
 from app import db as _db
@@ -27,6 +28,23 @@ def app(request):
     return app
 
 
+@pytest.yield_fixture
+def test_client(app):
+    """
+    Overriding the `client` fixture from pytest_flask to fix this bug:
+    https://github.com/pytest-dev/pytest-flask/issues/42
+    """
+    with app.test_client() as client:
+        yield client
+
+    while True:
+        top = flask._request_ctx_stack.top
+        if top is not None and top.preserved:
+            top.pop()
+        else:
+            break
+
+        
 @pytest.fixture(scope='session')
 def db(app, request):
     """
@@ -68,11 +86,6 @@ def session(db, request):
 
     request.addfinalizer(teardown)
     return session
-
-
-@pytest.fixture(scope='function')
-def test_client(app):
-    return app.test_client()
 
 
 @pytest.fixture()

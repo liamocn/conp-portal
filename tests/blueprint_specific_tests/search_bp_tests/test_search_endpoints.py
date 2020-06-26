@@ -17,6 +17,7 @@ def test_pipelines_route(test_client):
     res = test_client.get("/search")
     assert res.status_code == 200
 
+
 def test_dataset_search_route_post(test_client):
     """
     GIVEN calling the route "/dataset-search"
@@ -25,8 +26,9 @@ def test_dataset_search_route_post(test_client):
     """
 
     headers = {'Content-Type': 'application/json'}
-    res = test_client.post("/dataset-search", headers = headers)
+    res = test_client.post("/dataset-search", headers=headers)
     assert res.status_code == 405
+
 
 def test_dataset_search_route(session, new_dataset, test_client):
     """
@@ -40,7 +42,7 @@ def test_dataset_search_route(session, new_dataset, test_client):
     session.commit()
 
     headers = {'Content-Type': 'application/json'}
-    res = test_client.get("/dataset-search", headers = headers)
+    res = test_client.get("/dataset-search", headers=headers)
     assert res.status_code == 200
 
     body = res.get_json(force=True)
@@ -48,6 +50,7 @@ def test_dataset_search_route(session, new_dataset, test_client):
     assert type(body) != type(None)
     assert body["authorized"] == False
     assert body["total"] == 1
+
 
 def test_dataset_search_route_authorised(session, new_dataset, new_user, test_client):
     """
@@ -62,20 +65,20 @@ def test_dataset_search_route_authorised(session, new_dataset, new_user, test_cl
     session.add(new_user)
     session.commit()
 
-    with test_client:
-        test_client.post('/login', data=dict(
-            email=new_user.email,
-            password='ThisPassword'
-        ), follow_redirects=True)
+    test_client.post('/login', data=dict(
+        email=new_user.email,
+        password='ThisPassword'
+    ), follow_redirects=True)
 
-        headers = {'Content-Type': 'application/json'}
-        res = test_client.get("/dataset-search", headers = headers)
-        assert res.status_code == 200
+    headers = {'Content-Type': 'application/json'}
+    res = test_client.get("/dataset-search", headers=headers)
+    assert res.status_code == 200
 
-        body = res.get_json(force=True)
+    body = res.get_json(force=True)
 
-        #assert body["authorized"] == True
-        assert True
+    #assert body["authorized"] == True
+    assert True
+
 
 def test_dataset_search_route_with_filter(session, new_dataset, test_client):
     """
@@ -90,7 +93,8 @@ def test_dataset_search_route_with_filter(session, new_dataset, test_client):
 
     query = {'search': 'SearchTerm'}
     headers = {'Content-Type': 'application/json'}
-    res = test_client.get("/dataset-search", headers = headers, query_string = query)
+    res = test_client.get(
+        "/dataset-search", headers=headers, query_string=query)
     assert res.status_code == 200
 
     body = res.get_json(force=True)
@@ -113,7 +117,6 @@ def test_dataset_route(session, new_dataset, test_client):
     query = {'id': '8de99b0e-5f94-11e9-9e05-52545e9add8e'}
     headers = {'Content-Type': 'application/json'}
 
-    # res = test_client.get("/dataset", headers = headers, query_string = query)
+    res = test_client.get("/dataset", headers=headers, query_string=query)
 
     assert True
-    

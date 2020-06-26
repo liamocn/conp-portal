@@ -468,9 +468,12 @@ def get_dataset_readme(dataset_id):
 
     readmeFilepath=datsdataset.ReadmeFilepath
 
+    if readmeFilepath is None:
+        return None
+
     f=open(readmeFilepath, 'r')
     if f.mode != 'r':
-        return 'Readme Not Found', 404
+        return None
 
     readme=f.read()
 
