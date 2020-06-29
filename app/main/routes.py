@@ -123,7 +123,13 @@ def about():
     """
 
     # count number of datasets
-    datasets = Dataset.query.order_by(Dataset.id).all()
+
+    try:
+        datasets = Dataset.query.order_by(Dataset.id).all()
+    except :
+        # dataset table doesn't exist
+        datasets = []
+
     countDatasets = len(datasets)
 
     # count number of pipelines
@@ -133,19 +139,23 @@ def about():
     all_detailed_desc_path = os.path.join(
         cache_dir, "detailed_all_descriptors.json")
 
-    with open(all_desc_path, "r") as f:
-        all_descriptors = json.load(f)
+    try:
+        with open(all_desc_path, "r") as f:
+            all_descriptors = json.load(f)
 
-    with open(all_detailed_desc_path, "r") as f:
-        detailed_all_descriptors = json.load(f)
+        with open(all_detailed_desc_path, "r") as f:
+            detailed_all_descriptors = json.load(f)
 
-    elements = [
-        {**descriptor, **detailed_all_descriptors[d_index]}
-        for d_index, descriptor in enumerate(all_descriptors)
-    ]
+        elements = [
+            {**descriptor, **detailed_all_descriptors[d_index]}
+            for d_index, descriptor in enumerate(all_descriptors)
+        ]
 
-    # filter out the deprecated pipelines
-    elements = list(filter(lambda e: (not e["DEPRECATED"]), elements))
+        # filter out the deprecated pipelines
+        elements = list(filter(lambda e: (not e["DEPRECATED"]), elements))
+    except:
+        # could not load pipelines
+        elements = []
 
     countPipelines = len(elements)
 

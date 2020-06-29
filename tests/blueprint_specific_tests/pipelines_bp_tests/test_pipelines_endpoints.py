@@ -19,7 +19,7 @@ def test_pipelines_route(test_client):
     assert res.status_code == 200
 
 
-def test_pipeline_search_route(session, new_pipeline, test_client, app, runner):
+def test_pipeline_search_route(session, test_client, app, runner):
     """
     GIVEN calling the route "/pipeline-search"
     WHEN no user is logged in
@@ -27,11 +27,8 @@ def test_pipeline_search_route(session, new_pipeline, test_client, app, runner):
     THEN should return success code and all pipelines
     """
 
-    session.add(new_pipeline)
-    session.commit()
-
-    cli.register(app)
-    result = runner.invoke(args=["update_pipeline_data"])
+    #cli.register(app)
+    #result = runner.invoke(args=["update_pipeline_data"])
 
     headers = {'Content-Type': 'application/json'}
     res = test_client.get("/pipeline-search", headers = headers)
@@ -44,7 +41,7 @@ def test_pipeline_search_route(session, new_pipeline, test_client, app, runner):
     assert type(body["elements"]) != type(None)
     assert body["total"] > 0
 
-def test_pipeline_search_route_with_filter(session, new_pipeline, test_client):
+def test_pipeline_search_route_with_filter(session, test_client):
     """
     GIVEN calling the route "/pipeline-search"
     WHEN no user is logged in
@@ -52,10 +49,14 @@ def test_pipeline_search_route_with_filter(session, new_pipeline, test_client):
     THEN should return success code and filtered pipelines
     """
 
-    session.add(new_pipeline)
-    session.commit()
+    headers = {'Content-Type': 'application/json'}
+    res = test_client.get("/pipeline-search", headers = headers)
 
-    query = {'search': 'RandomSearchTerm'}
+    body = res.get_json(force=True)
+
+    unfilteredTotal = body["total"]
+
+    query = {'search': 'bids'}
     headers = {'Content-Type': 'application/json'}
     res = test_client.get("/pipeline-search", headers = headers, query_string = query)
     assert res.status_code == 200
@@ -65,17 +66,10 @@ def test_pipeline_search_route_with_filter(session, new_pipeline, test_client):
     assert type(body) != type(None)
     assert body["authorized"] == False
     assert type(body["elements"]) != type(None)
-    assert body["total"] == 0
+    assert body["total"] > 0
 
+    assert body["total"] < unfilteredTotal
 
-def test_share_route(test_client):
-    """
-    GIVEN calling the route "/share"
-    WHEN no user is logged in
-    THEN should return success code
-    """
-    res = test_client.get("/share")
-    assert res.status_code == 200
 
 def test_tools_route(test_client):
     """
