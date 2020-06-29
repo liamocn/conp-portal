@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 from flask import url_for
 
 
-def test_pipelines_route(test_client):
+def test_profile_route(test_client):
     """
     GIVEN calling the route "/profile"
     WHEN no user is logged in

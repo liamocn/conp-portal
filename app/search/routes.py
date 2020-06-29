@@ -330,6 +330,10 @@ def dataset_info():
 
     # Query dataset
     d=Dataset.query.filter_by(dataset_id=dataset_id).first()
+
+    if d is None:
+        return 'Not Found', 404
+
     datsdataset=DATSDataset(d.fspath)
 
     if current_user.is_authenticated:
@@ -398,7 +402,7 @@ def download_metadata():
     dataset=Dataset.query.filter_by(dataset_id=dataset_id).first()
     if dataset is None:
         # This shoud return a 404 not found
-        return 'Not Found', 400
+        return 'Not Found', 404
 
     datasetrootdir=os.path.join(
         current_app.config['DATA_PATH'],
